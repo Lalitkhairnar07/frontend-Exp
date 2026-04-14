@@ -17,8 +17,11 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // Assuming your token is stored in a cookie named 'token'
-    const token = getCookie('token');
-    
+    // const token = getCookie('token');
+
+    // Get token from localStorage natively or fallback to cookie
+    const token = localStorage.getItem('token') || getCookie('token');
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`; // Or however your backend expects it
     }
