@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import axios from '../api/axiosInstance';
 
 const Signup = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -12,6 +13,8 @@ const Signup = () => {
     console.log("Form Data:", data);
     
     // Simulate API call
+    const res = await axios.post("/user/signup",data)
+    console.log(res.data)
     setTimeout(() => {
       setIsLoading(false);
     }, 1500);

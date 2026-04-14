@@ -13,12 +13,17 @@ export const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // NOT CHANGED your core logic and API calls
-  const onSubmit = async(data) => {
+  const onSubmit = async (data) => {
     setIsLoading(true);
     try {
       console.log('Login Data:', data);
-      const res = await axios.post("/user/login",data)
-      //store token in cookies http only not in localstorage
+      const res = await axios.post("/user/login", data)
+
+      // Store token in localStorage (standard for JWT Bearer tokens)
+      console.log(res.data.token)
+      localStorage.setItem("token", res.data.token);
+
+      // Fallback to cookie without `secure` so it works on localhost HTTP
       console.log(res.data.token)
       document.cookie = `token=${res.data.token}; path=/; httpOnly; secure; sameSite=Lax`;
     } catch (err) {
@@ -31,13 +36,13 @@ export const Login = () => {
   return (
     // Outer container is strictly screen-height (100vh) to avoid full-page scrolling
     <div className="flex h-screen w-full bg-bg-muted font-sans text-text-base overflow-hidden">
-      
+
       {/* Left Design Side - Hidden on smaller screens */}
       <div className="hidden lg:flex w-5/12 xl:w-1/2 bg-primary relative overflow-hidden flex-col justify-center items-center p-12 shrink-0">
         {/* Decorative background blurs */}
         <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-primary-900/40 rounded-full blur-3xl pointer-events-none"></div>
-        
+
         <div className="relative z-10 text-white max-w-md w-full">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-primary font-bold text-xl shadow-lg shrink-0">
@@ -46,7 +51,7 @@ export const Login = () => {
             <h1 className="text-3xl font-extrabold tracking-tight">ExpenseTracker</h1>
           </div>
           <h2 className="text-4xl font-bold mb-6 leading-tight">
-            Welcome back to <br/> your dashboard.
+            Welcome back to <br /> your dashboard.
           </h2>
           <p className="text-primary-100 text-lg leading-relaxed">
             Sign in to continue managing your daily expenses effortlessly and tracking your financial future.
@@ -69,11 +74,11 @@ export const Login = () => {
 
       {/* Right Form Side - Scrollable internally, though login is usually short */}
       <div className="flex-1 flex flex-col h-full bg-bg-base shadow-[-10px_0_40px_rgba(0,0,0,0.05)] z-10 lg:rounded-l-[2.5rem] relative">
-        
+
         {/* INNER SCROLL CONTAINER */}
         <div className="flex-1 overflow-y-auto p-6 sm:p-10 lg:p-12 scroll-smooth flex flex-col justify-center">
           <div className="mx-auto w-full max-w-md flex flex-col justify-center py-4">
-            
+
             <div className="text-center lg:text-left mb-8 shrink-0">
               <h2 className="text-3xl font-bold text-text-base mb-2">Sign in to your account</h2>
               <p className="text-text-muted">
@@ -85,7 +90,7 @@ export const Login = () => {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 shrink-0">
-              
+
               <div>
                 <label className="block text-sm font-medium text-text-base mb-1.5" htmlFor="email">
                   Email Address
@@ -95,7 +100,7 @@ export const Login = () => {
                   type="email"
                   placeholder="name@example.com"
                   className={`block w-full rounded-xl border ${errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary/20'} bg-bg-muted/50 px-4 py-3 text-sm outline-none transition-all focus:ring-4`}
-                  {...register('email', { 
+                  {...register('email', {
                     required: 'Email is required',
                     pattern: {
                       value: /\S+@\S+\.\S+/,
@@ -117,7 +122,7 @@ export const Login = () => {
                   type="password"
                   placeholder="••••••••"
                   className={`block w-full rounded-xl border ${errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary/20'} bg-bg-muted/50 px-4 py-3 text-sm outline-none transition-all focus:ring-4`}
-                  {...register('password', { 
+                  {...register('password', {
                     required: 'Password is required',
                     minLength: {
                       value: 6,
@@ -167,7 +172,7 @@ export const Login = () => {
                 )}
               </button>
             </form>
-            
+
           </div>
         </div>
       </div>
