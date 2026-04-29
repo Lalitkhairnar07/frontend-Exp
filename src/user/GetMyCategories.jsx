@@ -48,7 +48,7 @@ export const GetMyCategories = () => {
                     </div>
                     {/* Add Category Button using generic SVGs */}
                     <Link
-                        to="/user/addcategory"
+                        to="/add-category"
                         className="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 transform hover:scale-105"
                     >
                         <svg className="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -158,4 +158,4 @@ export const GetMyCategories = () => {
             </div>
         </div>
     );
-};
+};
