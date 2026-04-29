@@ -34,8 +34,8 @@ export const GetMyCategories = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 font-sans">
-            <div className="max-w-7xl mx-auto">
+        <div className="w-full h-full font-sans">
+            <div className="w-full">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
                     <div>
