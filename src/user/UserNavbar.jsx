@@ -16,7 +16,7 @@ export const UserNavbar = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <nav className="bg-slate-900 shadow-md border-b border-slate-700 shrink-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             {/* Logo */}
@@ -98,7 +98,7 @@ export const UserNavbar = () => {
       </nav>
       
       {/* Dashboard Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8">
         <Outlet />
       </main>
     </div>
