@@ -1,23 +1,35 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from '../api/axiosInstance';
+import { toast } from 'react-toastify';
 
 const Signup = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate()
+
   const onSubmit = async (data) => {
     setIsLoading(true);
-    // Note: data.profilePic is a FileList containing the selected file
     console.log("Form Data:", data);
     
-    // Simulate API call
-    const res = await axios.post("/user/signup",data)
-    console.log(res.data)
-    setTimeout(() => {
+    try {
+      const res = await axios.post("/user/signup", data);
+      console.log(res.data);
+      
+      if (res.status === 200 || res.status === 201) {
+        toast.success("User Registered Successfully!");
+        navigate("/login");
+      } else {
+        toast.error("User Registration Failed");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast.error(error.response?.data?.message || "User Registration Failed");
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
