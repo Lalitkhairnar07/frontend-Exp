@@ -1,8 +1,10 @@
 //import axios from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from "../api/axiosInstance"
+import { toast } from 'react-toastify';
+
 
 export const Login = () => {
   const {
@@ -11,6 +13,7 @@ export const Login = () => {
     formState: { errors },
   } = useForm();
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   // NOT CHANGED your core logic and API calls
   const onSubmit = async (data) => {
@@ -26,6 +29,14 @@ export const Login = () => {
       // Fallback to cookie without `secure` so it works on localhost HTTP
       console.log(res.data.token)
       document.cookie = `token=${res.data.token}; path=/; httpOnly; secure; sameSite=Lax`;
+
+      if(res.status === 200){
+        toast.success("Login Successful!");
+        navigate("/")
+      }else{
+        toast.error("Login Failed")
+        navigate("/login")
+      }
     } catch (err) {
       console.error(err);
     } finally {
