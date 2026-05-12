@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from '../api/axiosInstance';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export const GetMyCategories = () => {
     const [categories, setCategories] = useState([]);
@@ -12,7 +13,7 @@ export const GetMyCategories = () => {
             setIsLoading(true);
             const res = await axios.get('/expenseCategory/get');
             console.log(res.data);
-            
+
             // Handle different possible response structures safely
             const data = res.data?.data || res.data;
             if (Array.isArray(data)) {
@@ -26,6 +27,18 @@ export const GetMyCategories = () => {
             setError('Failed to load categories. Please try again later.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const deleteCategory = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this category? (All expenses under this category will also be deleted)")) return;
+        try {
+            await axios.delete(`/expenseCategory/${id}`);
+            toast.success("Category deleted successfully!");
+            setCategories(prevCategories => prevCategories.filter(cat => cat._id !== id));
+        } catch (err) {
+            console.error('Error deleting category:', err);
+            toast.error(err.response?.data?.message || "Failed to delete category");
         }
     };
 
@@ -125,11 +138,11 @@ export const GetMyCategories = () => {
                                                 Category
                                             </p>
                                             <h3 className="text-lg font-bold text-gray-900 truncate mt-1">
-                                                {category.name || category.categoryName || 'Unnamed Category'}
+                                                {category.catName || category.name || 'Unnamed Category'}
                                             </h3>
                                         </div>
                                     </div>
-                                    
+
                                     {category.description && (
                                         <div className="mt-4">
                                             <p className="text-sm text-gray-600 line-clamp-2">
@@ -148,7 +161,15 @@ export const GetMyCategories = () => {
                                         </button>
                                     </div>
                                     <div className="text-xs text-gray-400">
-                                        {/* Additional metadata can go here */}
+                                        <button
+                                            onClick={() => deleteCategory(category._id)}
+                                            className="font-medium text-red-500 hover:text-red-700 transition-colors flex items-center bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg"
+                                        >
+                                            <svg className="mr-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            Delete
+                                        </button>
                                     </div>
                                 </div>
                             </div>
