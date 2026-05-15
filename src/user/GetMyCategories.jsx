@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 export const GetMyCategories = () => {
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedCategory, setSelectedCategory] = useState("expense");
     const [error, setError] = useState(null);
 
     const getAllCategories = async () => {
@@ -30,6 +31,26 @@ export const GetMyCategories = () => {
         }
     };
 
+    const getAllIncomeCategories = async () => {
+    try {
+        setIsLoading(true);
+        const res = await axios.get('/incomeCat/incomeCategory');
+        console.log(res.data);
+        
+        // Extract only the array (remove outer envelope)
+        const dataArray = res.data.data || res.data; 
+        
+        setCategories(dataArray);
+        setError(null);
+    } catch (err) {
+        console.error('Error fetching categories:', err);
+        setError('Failed to load categories. Please try again later.');
+    } finally {
+        setIsLoading(false);
+    }
+};
+
+
     const deleteCategory = async (id) => {
         if (!window.confirm("Are you sure you want to delete this category? (All expenses under this category will also be deleted)")) return;
         try {
@@ -44,6 +65,7 @@ export const GetMyCategories = () => {
 
     useEffect(() => {
         getAllCategories();
+        getAllIncomeCategories();
     }, []);
 
     return (
@@ -70,6 +92,20 @@ export const GetMyCategories = () => {
                         Add Category
                     </Link>
                 </div>
+
+                <div>
+                    <label>SELECT CATEGORY TYPE</label>
+                    <select onChange={(e) => {
+                        if (e.target.value === "expense") {
+                            getAllCategories();
+                        } else {
+                            getAllIncomeCategories();
+                        } 
+                    }}>
+                        <option value="expense">EXPENSE</option>
+                        <option value="income">INCOME</option>
+                    </select>
+                </div>  
 
                 {/* Loading State */}
                 {isLoading ? (
