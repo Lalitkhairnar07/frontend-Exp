@@ -8,14 +8,26 @@ export const AddCategory = () => {
     const navigate = useNavigate()
 
     const submitHanlder = async (data) => {
-        try {
-            //api
+        // try {
+        //     //api
+        //     const res = await axios.post("/expenseCategory/", data)
+        //     console.log(res.data)
+        //     reset() // clear form after submission
+        //     navigate('/my-categories')
+        // } catch (error) {
+        //     console.error("Error adding category:", error)
+        // }
+
+        console.log(data)
+        if(data.type == "expense"){
             const res = await axios.post("/expenseCategory/", data)
             console.log(res.data)
-            reset() // clear form after submission
             navigate('/my-categories')
-        } catch (error) {
-            console.error("Error adding category:", error)
+        }
+        if(data.type == "income"){
+            const res = await axios.post("/incomeCat/", data)
+            console.log(res.data)
+            navigate('/my-categories')
         }
     }
 
@@ -28,6 +40,20 @@ export const AddCategory = () => {
                 </div>
 
                 <form onSubmit={handleSubmit(submitHanlder)} className="p-6 sm:p-8 space-y-6">
+                    <div className="space-y-2">
+                        <label htmlFor="type" className="block text-sm font-semibold text-gray-700">
+                            Category Type
+                        </label>
+                        <select
+                            id="type"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-gray-800 bg-gray-50 focus:bg-white"
+                            {...register("type", { required: true })}
+                        >
+                            <option value="">Select Type</option>
+                            <option value="expense">Expense</option>
+                            <option value="income">Income</option>
+                        </select>
+                    </div>
                     <div className="space-y-2">
                         <label htmlFor="name" className="block text-sm font-semibold text-gray-700">
                             Category Name
