@@ -6,13 +6,14 @@ export const MyExpenses = () => {
     const [expenses, setExpenses] = useState([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
+    const [type, settype] = useState("expense")
 
     const getMyExpenses = async () => {
         try {
             setLoading(true)
             const url = searchTerm 
-                ? `/exp/search?expName=${searchTerm}` 
-                : "/exp/expbyuserid"
+                ? `/exp/search?expName=${searchTerm}&type=${type}` 
+                : `/exp/expbyuserid?type=${type}`
             const res = await axiosInstance.get(url)
             setExpenses(res.data.data)
             console.log(res.data.data)
@@ -41,7 +42,7 @@ export const MyExpenses = () => {
             getMyExpenses()
         }, 500)
         return () => clearTimeout(timeoutId)
-    }, [searchTerm])
+    }, [searchTerm,type])
 
     return (
         <div className="min-h-screen bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 text-slate-200">
@@ -64,8 +65,12 @@ export const MyExpenses = () => {
                                 </svg>
                             </div>
                         </div>
+                        <select className='px-4 py-2 bg-indigo-500/10 text-indigo-400 rounded-full text-sm font-medium border border-indigo-500/20 whitespace-nowrap' onChange={(e) => settype(e.target.value)} value={type}>
+                            <option value="expense">EXPENSE</option>
+                            <option value="income">INCOME</option>
+                        </select>
                         <span className="px-4 py-2 bg-indigo-500/10 text-indigo-400 rounded-full text-sm font-medium border border-indigo-500/20 whitespace-nowrap">
-                            Total Records: {expenses.length}
+                            Total Records: {expenses?.length || 0}
                         </span>
                     </div>
                 </div>
@@ -105,14 +110,14 @@ export const MyExpenses = () => {
                                                 {ex.description || '---'}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right font-mono text-emerald-400">
-                                                ${parseFloat(ex.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                ${parseFloat(ex.amount || ex.income).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-slate-400">
                                                 {new Date(ex.expenseDate).toLocaleDateString()}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className="px-3 py-1 bg-slate-800 text-indigo-300 rounded-lg text-sm border border-slate-700">
-                                                    {ex.expCategory?.catName?.toUpperCase() || 'Uncategorized'}
+                                                    {(ex.expCategory?.catName || ex.incomeCategory?.catName)?.toUpperCase() || 'Uncategorized'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">

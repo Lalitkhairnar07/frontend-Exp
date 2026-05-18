@@ -8,92 +8,141 @@ import { toast } from 'react-toastify'
 const maxSize = 5 * 1024 * 1024 // 5MB
 
 export const AddExpense = () => {
-    const {register,handleSubmit,formState:{errors}}=useForm()
-    const [categories, setcategories] = useState([])
-    const [selectedFile, setselectedFile] = useState("")
-    const navigate = useNavigate()
+  const { register, handleSubmit, formState: { errors } } = useForm()
+  const [categories, setcategories] = useState([])
+  const [selectedFile, setselectedFile] = useState("")
+  const navigate = useNavigate()
+  const [selectedType, setselectedType] = useState("expense")
 
-    const getMyCategories = async()=>{
-        const res = await axiosInstance.get("/expenseCategory/get")
-        console.log(res.data.data)
-        setcategories(res.data.data)
+  const getMyCategories = async () => {
+    const res = await axiosInstance.get("/expenseCategory/get")
+    console.log(res.data.data)
+    setcategories(res.data.data)
+  }
+
+  const getMyIncomeCategories = async () => {
+    const res = await axiosInstance.get("/incomeCat/incomeCategory")
+    console.log(res.data.data)
+    setcategories(res.data.data)
+  }
+
+  useEffect(() => {
+    if (selectedType == "expense") {
+      getMyCategories()
+    } else {
+      getMyIncomeCategories()
     }
+  }, [selectedType])
 
-    useEffect(()=>{
-        getMyCategories()
-    },[])
+  const submitHandler = async (data) => {
+    try {
+      console.log("Form data:", data);
+      console.log("Selected type:", selectedType);
+    
+      if(selectedType === "income"){
+        data.income = data.amount
+        delete data.amount
+        data.incomeCategory = data.expCategory
+        delete data.expCategory
+        
+      }
 
-    const submitHandler = async(data)=>{
-     try{
-        console.log(data)
-        const res = await axiosInstance.post("/exp/",data)
-        console.log(res) //expid _id
-        if(res.status==201){
+      const res = await axiosInstance.post("/exp/", data)
+      console.log(res) //expid _id
+      if (res.status == 201) {
 
-//file upload api
-            if(selectedFile){
-                console.log('File selected:', selectedFile)
+        //file upload api
+        if (selectedFile) {
+          console.log('File selected:', selectedFile)
 
-                if (selectedFile.size > maxSize) {
-                    toast.error("File size too large. Please select a file smaller than 5MB.")
-                    navigate("/my-expenses")
-                    return
-                }
+          if (selectedFile.size > maxSize) {
+            toast.error("File size too large. Please select a file smaller than 5MB.")
+            navigate("/my-expenses")
+            return
+          }
 
-                const formData = new FormData()
-                formData.append("expId",res.data.data._id) //exp id
-                formData.append("receipt",selectedFile)
+          const formData = new FormData()
+          formData.append("expId", res.data.data._id) //exp id
+          formData.append("receipt", selectedFile)
 
-                console.log('Uploading file:', selectedFile.name, 'Size:', selectedFile.size, 'Type:', selectedFile.type)
-                console.log('Expense ID:', res.data.data._id)
-                console.log('FormData contents:')
-                for (let [key, value] of formData.entries()) {
-                    console.log(key, value)
-                }
+          console.log('Uploading file:', selectedFile.name, 'Size:', selectedFile.size, 'Type:', selectedFile.type)
+          console.log('Expense ID:', res.data.data._id)
+          console.log('FormData contents:')
+          for (let [key, value] of formData.entries()) {
+            console.log(key, value)
+          }
 
-                try {
-                    const res2 = await axiosInstance.put("/exp/uploadreceipt", formData, {
-                        timeout: 30000, // 30 second timeout for file uploads
-                    })
+          try {
+            const res2 = await axiosInstance.put("/exp/uploadreceipt", formData, {
+              timeout: 30000, // 30 second timeout for file uploads
+            })
 
-                    console.log("file upload response",res2)
+            console.log("file upload response", res2)
 
-                    if(res2.status == 200){
-                         toast.success("Expense added successfully with receipt!")
-                         navigate("/my-expenses")
-                    }
-                    else{
-                        toast.warning("Expense added successfully but receipt upload failed")
-                        navigate("/my-expenses")
-                    }
-                } catch (uploadError) {
-                    console.error('File upload error:', uploadError)
-                    toast.warning("Expense added successfully but receipt upload failed: " + (uploadError.response?.data?.message || uploadError.message))
-                    navigate("/my-expenses")
-                }
-            } else {
-                toast.success("Expense added successfully!")
-                navigate("/my-expenses")
+            if (res2.status == 200) {
+              toast.success("Expense added successfully with receipt!")
+              navigate("/my-expenses")
             }
-
+            else {
+              toast.warning("Expense added successfully but receipt upload failed")
+              navigate("/my-expenses")
+            }
+          } catch (uploadError) {
+            console.error('File upload error:', uploadError)
+            toast.warning("Expense added successfully but receipt upload failed: " + (uploadError.response?.data?.message || uploadError.message))
+            navigate("/my-expenses")
+          }
+        } else {
+          toast.success("Expense added successfully!")
+          navigate("/my-expenses")
         }
-     }catch(err){
-        console.error('Error adding expense:', err)
-        toast.error(err.response?.data?.message || "Failed to add expense. Please try again.")
-     }
+
+      }
+    } catch (err) {
+      console.error('Error adding expense:', err)
+      toast.error(err.response?.data?.message || "Failed to add expense. Please try again.")
     }
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2">
-            Add New Expense
+            Add New {selectedType === 'expense' ? 'Expense' : 'Income'}
           </h1>
           <p className="text-slate-400 text-lg">
-            Track your spending by adding expense details
+            Track your finances by adding {selectedType === 'expense' ? 'expense' : 'income'} details
           </p>
+        </div>
+
+        {/* Type Toggle */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-slate-900 p-1.5 rounded-xl flex items-center shadow-lg border border-slate-800">
+            <button
+              type="button"
+              onClick={() => setselectedType('expense')}
+              className={`px-8 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                selectedType === 'expense'
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
+            >
+              Expense
+            </button>
+            <button
+              type="button"
+              onClick={() => setselectedType('income')}
+              className={`px-8 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                selectedType === 'income'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
+            >
+              Income
+            </button>
+          </div>
         </div>
 
         {/* Form Card */}
