@@ -8,6 +8,7 @@ import { GetMyCategories } from "../user/GetMyCategories";
 import { AddExpense } from "../user/AddExpense";
 import { MyExpenses } from "../user/MyExpenses";
 import { Report } from "../user/Report";
+import { Profile } from "../user/Profile";
 
 const AppRoutes = () => {
     
@@ -43,6 +44,10 @@ const AppRoutes = () => {
                 {
                     path:"reports",
                     element:<Report/>
+                },
+                {
+                    path:"profile",
+                    element:<Profile/>
                 }
             ]
         },
