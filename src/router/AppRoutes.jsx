@@ -9,6 +9,8 @@ import { AddExpense } from "../user/AddExpense";
 import { MyExpenses } from "../user/MyExpenses";
 import { Report } from "../user/Report";
 import { Profile } from "../user/Profile";
+import { Budget } from "../user/Budget";
+import { AddBudget } from "../user/AddBudget";
 
 const AppRoutes = () => {
     
@@ -48,6 +50,14 @@ const AppRoutes = () => {
                 {
                     path:"profile",
                     element:<Profile/>
+                },
+                {
+                    path:"budget",
+                    element:<Budget/>
+                },
+                {
+                    path:"add-budget",
+                    element:<AddBudget/>
                 }
             ]
         },
