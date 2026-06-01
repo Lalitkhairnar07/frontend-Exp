@@ -6,7 +6,6 @@ export const UserNavbar = () => {
 
   // Array of links for easy management
   const navLinks = [
-    { name: 'Dashboard', path: '' },
     { name: 'Add-Category', path: 'add-category' },
     { name: 'my-categories', path: 'my-categories' },
     {name:'add-expense',path:'add-expense'},
