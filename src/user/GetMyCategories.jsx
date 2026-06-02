@@ -1,218 +1,226 @@
-import { useEffect, useState } from 'react';
-import axios from '../api/axiosInstance';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import axios from '../api/axiosInstance';
 
 export const GetMyCategories = () => {
-    const [categories, setCategories] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [selectedCategory, setSelectedCategory] = useState("expense");
-    const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [categoryType, setCategoryType] = useState('expense');
+  const [error, setError] = useState(null);
 
-    const getAllCategories = async () => {
-        try {
-            setIsLoading(true);
-            const res = await axios.get('/expenseCategory/get');
-            console.log(res.data);
-
-            // Handle different possible response structures safely
-            const data = res.data?.data || res.data;
-            if (Array.isArray(data)) {
-                setCategories(data);
-            } else {
-                setCategories([]);
-            }
-            setError(null);
-        } catch (err) {
-            console.error('Error fetching categories:', err);
-            setError('Failed to load categories. Please try again later.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const getAllIncomeCategories = async () => {
+  const getAllCategories = async () => {
     try {
-        setIsLoading(true);
-        const res = await axios.get('/incomeCat/incomeCategory');
-        console.log(res.data);
-        
-        // Extract only the array (remove outer envelope)
-        const dataArray = res.data.data || res.data; 
-        
-        setCategories(dataArray);
-        setError(null);
+      setIsLoading(true);
+      setError(null);
+      const res = await axios.get('/expenseCategory/get');
+      const data = res.data?.data || res.data;
+      if (Array.isArray(data)) {
+        setCategories(data);
+      } else {
+        setCategories([]);
+      }
     } catch (err) {
-        console.error('Error fetching categories:', err);
-        setError('Failed to load categories. Please try again later.');
+      console.error('Error fetching expense categories:', err);
+      setError('Failed to load categories. Please try again later.');
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
-};
+  };
 
+  const getAllIncomeCategories = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const res = await axios.get('/incomeCat/incomeCategory');
+      const dataArray = res.data.data || res.data;
+      if (Array.isArray(dataArray)) {
+        setCategories(dataArray);
+      } else {
+        setCategories([]);
+      }
+    } catch (err) {
+      console.error('Error fetching income categories:', err);
+      setError('Failed to load categories. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    const deleteCategory = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this category? (All expenses under this category will also be deleted)")) return;
-        try {
-            await axios.delete(`/expenseCategory/${id}`);
-            toast.success("Category deleted successfully!");
-            setCategories(prevCategories => prevCategories.filter(cat => cat._id !== id));
-        } catch (err) {
-            console.error('Error deleting category:', err);
-            toast.error(err.response?.data?.message || "Failed to delete category");
-        }
-    };
+  const deleteCategory = async (id) => {
+    if (!window.confirm('Delete this category? All expenses linked to this category will also be deleted.')) return;
+    try {
+      if (categoryType === 'expense') {
+        await axios.delete(`/expenseCategory/${id}`);
+      } else {
+        await axios.delete(`/incomeCat/${id}`);
+      }
+      toast.success('Category deleted successfully!');
+      setCategories((prev) => prev.filter((cat) => cat._id !== id));
+    } catch (err) {
+      console.error('Error deleting category:', err);
+      toast.error(err.response?.data?.message || 'Failed to delete category');
+    }
+  };
 
-    useEffect(() => {
-        getAllCategories();
-        getAllIncomeCategories();
-    }, []);
+  useEffect(() => {
+    if (categoryType === 'expense') {
+      getAllCategories();
+    } else {
+      getAllIncomeCategories();
+    }
+  }, [categoryType]);
 
-    return (
-        <div className="w-full h-full font-sans">
-            <div className="w-full">
-                {/* Header */}
-                <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-                    <div>
-                        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                            My Categories
-                        </h1>
-                        <p className="mt-1 text-sm text-gray-500">
-                            Manage your expense categories efficiently.
-                        </p>
-                    </div>
-                    {/* Add Category Button using generic SVGs */}
-                    <Link
-                        to="/add-category"
-                        className="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 transform hover:scale-105"
-                    >
-                        <svg className="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        Add Category
-                    </Link>
+  return (
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
+      
+      {/* 1. HEADER ROW */}
+      <section className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+            My Categories
+          </h1>
+          <p className="text-slate-400 text-sm">
+            Configure custom classification buckets for expenditures and deposits.
+          </p>
+        </div>
+
+        <Link
+          to="/add-category"
+          className="inline-flex items-center px-5 py-3 bg-indigo-600 hover:bg-indigo-500 border border-transparent rounded-2xl shadow-lg shadow-indigo-600/20 hover:shadow-indigo-550/30 text-sm font-bold text-white transition-all transform hover:-translate-y-0.5 active:translate-y-0 gap-2"
+        >
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Category
+        </Link>
+      </section>
+
+      {/* 2. FILTER & SORT AREA */}
+      <section className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex items-center gap-3">
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
+            Classification Type
+          </label>
+          <div className="relative">
+            <select
+              value={categoryType}
+              onChange={(e) => setCategoryType(e.target.value)}
+              className="px-4 py-2.5 bg-slate-800 border border-slate-700 text-white rounded-xl text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all pr-10 appearance-none"
+            >
+              <option value="expense">Expense Categories</option>
+              <option value="income">Income Categories</option>
+            </select>
+            {/* Select Chevron */}
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-4 py-2 bg-indigo-500/10 text-indigo-400 rounded-full text-xs font-bold border border-indigo-500/25 whitespace-nowrap self-stretch sm:self-auto text-center">
+          Total Buckets: {categories.length}
+        </div>
+      </section>
+
+      {/* 3. CORE VIEWS (LOADING / ERROR / EMPTY / GRID) */}
+      {isLoading ? (
+        <div className="flex flex-col justify-center items-center h-64 space-y-4">
+          <div className="relative w-12 h-12">
+            <div className="absolute inset-0 rounded-full border-4 border-indigo-600/20 animate-pulse"></div>
+            <div className="absolute inset-0 rounded-full border-t-4 border-indigo-500 animate-spin"></div>
+          </div>
+          <p className="text-slate-400 text-sm font-semibold tracking-wide animate-pulse">Querying categories...</p>
+        </div>
+      ) : error ? (
+        <div className="rounded-2xl bg-red-500/10 border border-red-500/25 p-5 shadow-sm">
+          <div className="flex gap-3">
+            <div className="shrink-0 text-red-400">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-red-400">Data Query Error</h3>
+              <p className="mt-1 text-xs text-red-300/80">{error}</p>
+            </div>
+          </div>
+        </div>
+      ) : categories.length === 0 ? (
+        <div className="text-center py-20 bg-slate-900 rounded-3xl shadow-md border border-slate-800 p-8 space-y-4 flex flex-col justify-center items-center">
+          <div className="w-16 h-16 bg-slate-800/80 rounded-full flex items-center justify-center text-slate-500 mb-2">
+            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-300">No categories found</h3>
+            <p className="text-slate-500 text-sm max-w-sm mx-auto mt-1">
+              Start adding your custom classification buckets to organize your incomes and expenses neatly.
+            </p>
+          </div>
+          <Link
+            to="/add-category"
+            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-xs font-bold rounded-xl shadow-md transition-all mt-4"
+          >
+            Create Category Buckets
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {categories.map((category) => (
+            <div
+              key={category._id}
+              className="bg-slate-900 border border-slate-800 overflow-hidden rounded-3xl hover:border-slate-700/60 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between h-48"
+            >
+              <div className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="shrink-0 bg-indigo-500/10 rounded-2xl p-3 text-indigo-400 group-hover:bg-indigo-500/20 transition-colors">
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-0.5">
+                      Category
+                    </p>
+                    <h3 className="text-base font-bold text-slate-200 truncate group-hover:text-indigo-400 transition-colors">
+                      {(category.catName || category.name || 'Unnamed Category').toUpperCase()}
+                    </h3>
+                  </div>
                 </div>
 
-                <div>
-                    <label>SELECT CATEGORY TYPE</label>
-                    <select onChange={(e) => {
-                        if (e.target.value === "expense") {
-                            getAllCategories();
-                        } else {
-                            getAllIncomeCategories();
-                        } 
-                    }}>
-                        <option value="expense">EXPENSE</option>
-                        <option value="income">INCOME</option>
-                    </select>
-                </div>  
-
-                {/* Loading State */}
-                {isLoading ? (
-                    <div className="flex flex-col justify-center items-center h-64 space-y-4">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
-                        <p className="text-indigo-600 font-medium">Loading categories...</p>
-                    </div>
-                ) : error ? (
-                    /* Error State */
-                    <div className="rounded-lg bg-red-50 p-4 shadow-sm border border-red-200">
-                        <div className="flex items-start">
-                            <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <div className="ml-3">
-                                <h3 className="text-sm font-medium text-red-800">Error</h3>
-                                <div className="mt-2 text-sm text-red-700">
-                                    <p>{error}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ) : categories.length === 0 ? (
-                    /* Empty State */
-                    <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-200">
-                        <div className="mx-auto h-24 w-24 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                            <svg className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                            </svg>
-                        </div>
-                        <h3 className="mt-2 text-lg font-semibold text-gray-900">No categories found</h3>
-                        <p className="mt-1 text-sm text-gray-500 max-w-sm mx-auto">
-                            Get started by creating your first expense category to organize your finances.
-                        </p>
-                        <div className="mt-6">
-                            <Link
-                                to="/user/addcategory"
-                                className="inline-flex items-center px-5 py-2.5 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200"
-                            >
-                                <svg className="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                Create Category
-                            </Link>
-                        </div>
-                    </div>
-                ) : (
-                    /* Categories Grid */
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {categories.map((category, index) => (
-                            <div
-                                key={category._id || index}
-                                className="bg-white overflow-hidden shadow-sm rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-300 ease-in-out group hover:-translate-y-1"
-                            >
-                                <div className="p-6">
-                                    <div className="flex items-center">
-                                        <div className="flex-shrink-0 bg-indigo-50 rounded-xl p-3.5 group-hover:bg-indigo-100 transition-colors duration-300">
-                                            <svg className="h-7 w-7 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                            </svg>
-                                        </div>
-                                        <div className="ml-5 w-0 flex-1">
-                                            <p className="text-sm font-medium text-gray-500 truncate uppercase tracking-wider">
-                                                Category
-                                            </p>
-                                            <h3 className="text-lg font-bold text-gray-900 truncate mt-1">
-                                                {category.catName || category.name || 'Unnamed Category'}
-                                            </h3>
-                                        </div>
-                                    </div>
-
-                                    {category.description && (
-                                        <div className="mt-4">
-                                            <p className="text-sm text-gray-600 line-clamp-2">
-                                                {category.description}
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-between items-center group-hover:bg-gray-100 transition-colors duration-300">
-                                    <div className="text-sm">
-                                        <button className="font-medium text-indigo-600 hover:text-indigo-800 transition-colors flex items-center">
-                                            View Details
-                                            <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div className="text-xs text-gray-400">
-                                        <button
-                                            onClick={() => deleteCategory(category._id)}
-                                            className="font-medium text-red-500 hover:text-red-700 transition-colors flex items-center bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg"
-                                        >
-                                            <svg className="mr-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                            Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                {category.description && (
+                  <p className="text-slate-400 text-xs mt-4 line-clamp-2 leading-relaxed">
+                    {category.description}
+                  </p>
                 )}
+              </div>
+
+              {/* Bottom Actions Area inside Category Card */}
+              <div className="bg-slate-950/40 px-6 py-3.5 border-t border-slate-800/80 flex justify-between items-center group-hover:bg-slate-950/60 transition-colors">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  {categoryType === 'expense' ? '💸 DEBIT' : '💰 CREDIT'}
+                </span>
+                
+                <button
+                  onClick={() => deleteCategory(category._id)}
+                  className="font-bold text-rose-500 hover:text-rose-400 text-xs transition-colors flex items-center bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-1.5 rounded-lg gap-1.5"
+                  title="Remove category bucket"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
+                </button>
+              </div>
             </div>
+          ))}
         </div>
-    );
+      )}
+
+    </div>
+  );
 };
