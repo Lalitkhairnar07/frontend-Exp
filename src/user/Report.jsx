@@ -108,7 +108,7 @@ export const Report = () => {
             getMyExpenses();
     },[])
     return (
-        <div className="min-h-screen bg-slate-950 py-8 px-4 sm:px-6 lg:px-8 text-slate-200">
+        <div className="text-slate-200">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
