@@ -45,7 +45,7 @@ export const MyExpenses = () => {
     }, [searchTerm,type])
 
     return (
-        <div className="min-h-screen bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 text-slate-200">
+        <div className="text-slate-200">
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <h1 className="text-3xl font-extrabold text-white tracking-tight">My Expenses</h1>
