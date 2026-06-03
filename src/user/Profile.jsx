@@ -66,7 +66,7 @@ export const Profile = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+            <div className="flex items-center justify-center py-20">
                 <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
         );
@@ -74,7 +74,7 @@ export const Profile = () => {
 
     if (!user) {
         return (
-            <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">
+            <div className="flex items-center justify-center py-20 text-white">
                 <div className="text-center bg-slate-900 p-8 rounded-2xl shadow-2xl border border-slate-800">
                     <h2 className="text-2xl font-bold text-slate-400 mb-4">No Profile Found</h2>
                     <p className="text-slate-500">We couldn't load your profile information.</p>
@@ -88,7 +88,7 @@ export const Profile = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 text-slate-200">
+        <div className="text-slate-200">
             <div className="max-w-4xl mx-auto">
                 <div className="bg-slate-900 rounded-3xl shadow-2xl border border-slate-800 overflow-hidden relative">
                     {/* Header Background */}
