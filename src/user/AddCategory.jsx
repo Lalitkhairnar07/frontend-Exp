@@ -37,7 +37,7 @@ export const AddCategory = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8 bg-slate-950">
+    <div className="flex items-center justify-center py-10">
       <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden animate-fade-in">
         
         {/* Header Block */}
