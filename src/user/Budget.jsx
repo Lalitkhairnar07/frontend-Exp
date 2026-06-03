@@ -85,7 +85,7 @@ export const Budget = () => {
 
     if (loading) {
         return (
-            <div className="min-h-[calc(100vh-4rem)] bg-slate-50 flex items-center justify-center">
+            <div className="flex items-center justify-center py-20">
                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
             </div>
         );
@@ -102,7 +102,7 @@ export const Budget = () => {
     };
 
     return (
-        <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div>
             <div className="max-w-3xl mx-auto">
                 
                 {/* Header Section */}
