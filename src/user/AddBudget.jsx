@@ -25,7 +25,7 @@ export const AddBudget = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4 sm:p-6 lg:p-8 bg-gray-50">
+        <div className="flex items-center justify-center py-10">
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
                 <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 sm:p-8">
                     <h1 className="text-2xl sm:text-3xl font-extrabold text-white text-center tracking-tight">Add Budget</h1>
