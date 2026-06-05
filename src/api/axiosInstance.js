@@ -10,7 +10,7 @@ const getCookie = (name) => {
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3000', // Adjust your base URL as needed
+  baseURL: 'https://backend-exp-ouxl.onrender.com', // Adjust your base URL as needed
 });
 
 // Request interceptor to add the token to headers
