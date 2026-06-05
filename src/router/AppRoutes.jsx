@@ -17,7 +17,7 @@ const AppRoutes = () => {
     
     const router = createBrowserRouter([
         {
-            path: "/",
+            path: "/login",
             element:<Login/>
         },
         {
@@ -25,7 +25,7 @@ const AppRoutes = () => {
             element: <ForgotPassword />
         },
         {
-            path:"/user",
+            path:"",
             element:<UserNavbar/>,
             children:[
                 {
