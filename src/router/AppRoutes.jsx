@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Login } from "../common/Login";
 import Signup from "../common/Signup";
+import ForgotPassword from "../common/ForgotPassword";
 import { UserNavbar } from "../user/UserNavbar";
 import { ExpenseDashboard } from "../user/ExpenseDashboard";
 import { AddCategory } from "../user/AddCategory";
@@ -18,6 +19,10 @@ const AppRoutes = () => {
         {
             path: "/login",
             element:<Login/>
+        },
+        {
+            path: "/forgot-password",
+            element: <ForgotPassword />
         },
         {
             path:"",
