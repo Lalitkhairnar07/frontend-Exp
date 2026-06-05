@@ -39,14 +39,15 @@ export const Login = () => {
       }
     } catch (err) {
       console.error(err);
+      toast.error(err.response?.data?.message || "Login Failed. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    // Outer container is strictly screen-height (100vh) to avoid full-page scrolling
-    <div className="flex h-screen w-full bg-bg-muted font-sans text-text-base overflow-hidden">
+    // Outer container allows standard browser scrolling
+    <div className="flex min-h-screen w-full bg-bg-muted font-sans text-text-base">
 
       {/* Left Design Side - Hidden on smaller screens */}
       <div className="hidden lg:flex w-5/12 xl:w-1/2 bg-primary relative overflow-hidden flex-col justify-center items-center p-12 shrink-0">
@@ -83,11 +84,11 @@ export const Login = () => {
         </div>
       </div>
 
-      {/* Right Form Side - Scrollable internally, though login is usually short */}
-      <div className="flex-1 flex flex-col h-full bg-bg-base shadow-[-10px_0_40px_rgba(0,0,0,0.05)] z-10 lg:rounded-l-[2.5rem] relative">
+      {/* Right Form Side - Natural height layout */}
+      <div className="flex-1 flex flex-col min-h-screen bg-bg-base shadow-[-10px_0_40px_rgba(0,0,0,0.05)] z-10 lg:rounded-l-[2.5rem] relative">
 
-        {/* INNER SCROLL CONTAINER */}
-        <div className="flex-1 overflow-y-auto p-6 sm:p-10 lg:p-12 scroll-smooth flex flex-col justify-center">
+        {/* INNER CONTAINER */}
+        <div className="flex-1 p-6 sm:p-10 lg:p-12 flex flex-col justify-center">
           <div className="mx-auto w-full max-w-md flex flex-col justify-center py-4">
 
             <div className="text-center lg:text-left mb-8 shrink-0">
@@ -159,9 +160,9 @@ export const Login = () => {
                 </div>
 
                 <div className="text-sm">
-                  <a href="#" className="font-medium text-primary hover:text-primary-hover hover:underline transition-colors">
+                  <Link to="/forgot-password" className="font-medium text-primary hover:text-primary-hover hover:underline transition-colors">
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               </div>
 

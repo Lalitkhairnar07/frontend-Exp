@@ -33,8 +33,8 @@ const Signup = () => {
   };
 
   return (
-    // Outer container is strictly screen-height (100vh) to avoid full-page scrolling
-    <div className="flex h-screen w-full bg-bg-muted font-sans text-text-base overflow-hidden">
+    // Outer container allows standard browser scrolling
+    <div className="flex min-h-screen w-full bg-bg-muted font-sans text-text-base">
       
       {/* Left Design Side - Hidden on smaller screens */}
       <div className="hidden lg:flex w-5/12 xl:w-1/2 bg-primary relative overflow-hidden flex-col justify-center items-center p-12 shrink-0">
@@ -71,11 +71,11 @@ const Signup = () => {
         </div>
       </div>
 
-      {/* Right Form Side - Scrollable internally if content over-flows height */}
-      <div className="flex-1 flex flex-col h-full bg-bg-base shadow-[-10px_0_40px_rgba(0,0,0,0.05)] z-10 lg:rounded-l-[2.5rem] relative">
+      {/* Right Form Side - Natural height layout */}
+      <div className="flex-1 flex flex-col min-h-screen bg-bg-base shadow-[-10px_0_40px_rgba(0,0,0,0.05)] z-10 lg:rounded-l-[2.5rem] relative">
         
-        {/* INNER SCROLL CONTAINER: This handles scrolling for the form on small screens! */}
-        <div className="flex-1 overflow-y-auto p-6 sm:p-10 lg:p-12 scroll-smooth">
+        {/* INNER CONTAINER */}
+        <div className="flex-1 p-6 sm:p-10 lg:p-12">
           <div className="mx-auto w-full max-w-xl flex flex-col min-h-full justify-center py-4">
             
             <div className="text-center lg:text-left mb-8 shrink-0">
