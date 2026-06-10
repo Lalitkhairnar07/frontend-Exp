@@ -23,11 +23,11 @@ export const Login = () => {
       const res = await axios.post("/user/login", data)
 
       // Store token in localStorage (standard for JWT Bearer tokens)
-      console.log(res.data.token)
+      // console.log(res.data.token)
       localStorage.setItem("token", res.data.token);
 
       // Fallback to cookie without `secure` so it works on localhost HTTP
-      console.log(res.data.token)
+      // console.log(res.data.token)
       document.cookie = `token=${res.data.token}; path=/; httpOnly; secure; sameSite=Lax`;
 
       if(res.status === 200){
